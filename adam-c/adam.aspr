@@ -1,0 +1,162 @@
+{
+    "type" : "record",
+    "name" : "ADAMRecord",
+    "fields" : [ {
+	"name" : "referenceName",
+	"type" : [ "null", "string" ],
+	"doc" : "* These two fields, along with the two\n     * reference{Length, Url} fields at the bottom\n     * of the schema, collectively form the contents\n     * of the Sequence Dictionary embedded in the these\n     * records from the BAM / SAM itself.",
+	"default" : null
+    }, {
+	"name" : "referenceId",
+	"type" : [ "null", "int" ],
+	"default" : null
+    }, {
+	"name" : "start",
+	"type" : [ "null", "long" ],
+	"default" : null
+    }, {
+	"name" : "mapq",
+	"type" : [ "null", "int" ],
+	"default" : null
+    }, {
+	"name" : "readName",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "sequence",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "mateReference",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "mateAlignmentStart",
+	"type" : [ "null", "long" ],
+	"default" : null
+    }, {
+	"name" : "cigar",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "qual",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupId",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "readPaired",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "properPair",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "readMapped",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "mateMapped",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "readNegativeStrand",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "mateNegativeStrand",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "firstOfPair",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "secondOfPair",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "primaryAlignment",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "failedVendorQualityChecks",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "duplicateRead",
+	"type" : [ "boolean", "null" ],
+	"default" : false
+    }, {
+	"name" : "mismatchingPositions",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "attributes",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupSequencingCenter",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupDescription",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupRunDateEpoch",
+	"type" : [ "null", "long" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupFlowOrder",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupKeySequence",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupLibrary",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupPredictedMedianInsertSize",
+	"type" : [ "null", "int" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupPlatform",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupPlatformUnit",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "recordGroupSample",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "mateReferenceId",
+	"type" : [ "null", "int" ],
+	"default" : null
+    }, {
+	"name" : "referenceLength",
+	"type" : [ "null", "long" ],
+	"default" : null
+    }, {
+	"name" : "referenceUrl",
+	"type" : [ "null", "string" ],
+	"default" : null
+    }, {
+	"name" : "mateReferenceLength",
+	"type" : [ "null", "long" ],
+	"default" : null
+    }, {
+	"name" : "mateReferenceUrl",
+	"type" : [ "null", "string" ],
+	"default" : null
+    } ]
+}
