@@ -58,9 +58,14 @@
     (insert-file-contents "/Users/nealsid/jre-classes.txt")
     (setq java-classes (split-string (buffer-string) "\n"))))
 
-(defun add-java-class ()
-  (interactive)
-  (insert (ido-completing-read "class> " java-classes)))
+(defun add-java-class (use-killring)
+  (interactive
+   (cond
+    ((equal current-prefix-arg '(4))
+     (list t))
+    (t (list nil))))
+
+  (insert (ido-completing-read "class> " java-classes nil nil (if use-killring (current-kill 0) nil))))
 
 (initialize-java-class-list)
 (global-set-key (kbd "M-J") 'add-java-class)
