@@ -76,3 +76,23 @@
   (find-file "/Users/nealsid/.emacs"))
 
 (global-set-key (kbd "C-c e") 'find-dot-emacs)
+
+(defun add-try-catch (catch-clause-count)
+  (interactive
+   (cond
+    ((numberp current-prefix-arg)
+     (list current-prefix-arg))
+    (t (list 1))))
+  (save-excursion
+    (goto-char (region-beginning))
+    (insert "try {
+"))
+  (goto-char (region-end))
+  (insert (apply 'concat (make-list catch-clause-count "} catch () {
+")))
+  (insert "}
+")
+  (save-excursion
+    (indent-region (region-beginning) (region-end))))
+
+(global-set-key (kbd "C-c j t") 'add-try-catch)
