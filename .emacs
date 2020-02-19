@@ -65,3 +65,9 @@
 (initialize-java-class-list)
 (global-set-key (kbd "M-J") 'add-java-class)
 (server-start)
+
+(defun find-dot-emacs ()
+  (interactive)
+  (find-file "/Users/nealsid/.emacs"))
+
+(global-set-key (kbd "C-c e") 'find-dot-emacs)
