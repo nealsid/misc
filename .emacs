@@ -11,7 +11,7 @@
 
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+             '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 (unless (package-installed-p 'magit)
   (package-refresh-contents) (package-install 'magit))
@@ -43,6 +43,50 @@
  '(display-buffer-reuse-frames t)
  '(js2-basic-offset 2)
  '(ns-command-modifier (quote meta))
+ '(package-selected-packages
+   (quote
+    (lsp-ui flycheck lsp-sourcekit spinner lsp-mode nasm-mode xcscope web-mode tuareg swift-mode magit find-file-in-repository ess ensime apples-mode)))
+ '(safe-local-variable-values
+   (quote
+    ((eval add-hook
+	   (quote prog-mode-hook)
+	   (lambda nil
+	     (whitespace-mode 1))
+	   (not :APPEND)
+	   :BUFFER-LOCAL)
+     (tab-always-indent . t)
+     (swift-basic-offset . 2)
+     (whitespace-style face lines indentation:space)
+     (swift-syntax-check-fn . swift-project-swift-syntax-check)
+     (swift-find-executable-fn . swift-project-executable-find)
+     (eval let*
+	   ((x
+	     (dir-locals-find-file default-directory))
+	    (this-directory
+	     (if
+		 (listp x)
+		 (car x)
+	       (file-name-directory x))))
+	   (unless
+	       (or
+		(featurep
+		 (quote swift-project-settings))
+		(and
+		 (fboundp
+		  (quote tramp-tramp-file-p))
+		 (tramp-tramp-file-p this-directory)))
+	     (add-to-list
+	      (quote load-path)
+	      (concat this-directory "utils")
+	      :append)
+	     (let
+		 ((swift-project-directory this-directory))
+	       (require
+		(quote swift-project-settings))))
+	   (set
+	    (make-local-variable
+	     (quote swift-project-directory))
+	    this-directory)))))
  '(scroll-bar-mode nil)
  '(show-trailing-whitespace t)
  '(tool-bar-mode nil))
@@ -53,22 +97,6 @@
  ;; If there is more than one, they won't work right.
  )
 
-(defun initialize-java-class-list ()
-  (with-temp-buffer
-    (insert-file-contents "/Users/nealsid/jre-classes.txt")
-    (setq java-classes (split-string (buffer-string) "\n"))))
-
-(defun add-java-class (use-killring)
-  (interactive
-   (cond
-    ((equal current-prefix-arg '(4))
-     (list t))
-    (t (list nil))))
-
-  (insert (ido-completing-read "class> " java-classes nil nil (if use-killring (current-kill 0) nil))))
-
-(initialize-java-class-list)
-(global-set-key (kbd "M-J") 'add-java-class)
 (server-start)
 
 (defun find-dot-emacs ()
@@ -77,22 +105,10 @@
 
 (global-set-key (kbd "C-c e") 'find-dot-emacs)
 
-(defun add-try-catch (catch-clause-count)
-  (interactive
-   (cond
-    ((numberp current-prefix-arg)
-     (list current-prefix-arg))
-    (t (list 1))))
-  (save-excursion
-    (goto-char (region-beginning))
-    (insert "try {
-"))
-  (goto-char (region-end))
-  (insert (apply 'concat (make-list catch-clause-count "} catch () {
-")))
-  (insert "}
-")
-  (save-excursion
-    (indent-region (region-beginning) (region-end))))
+(load "/Users/nealsid/src/github/ejj/ejj.el")
 
-(global-set-key (kbd "C-c j t") 'add-try-catch)
+(eval-after-load 'lsp-mode
+  (progn
+    (require 'lsp-sourcekit)
+    (setq lsp-sourcekit-executable
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp")))
