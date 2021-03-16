@@ -35,61 +35,61 @@
 
 (require 'cc-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'prog-mode-hook (lambda ()
+			    (setq show-trailing-whitespace t)))
+(add-to-list 'auto-mode-alist '("\\.tcc\\'" . c++-mode))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("0fffa9669425ff140ff2ae8568c7719705ef33b7a927a0ba7c5e2ffcfac09b75" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" default))
  '(display-buffer-reuse-frames t)
+ '(indent-tabs-mode nil)
  '(js2-basic-offset 2)
- '(ns-command-modifier (quote meta))
+ '(ns-command-modifier 'meta)
  '(package-selected-packages
-   (quote
-    (lsp-ui flycheck lsp-sourcekit spinner lsp-mode nasm-mode xcscope web-mode tuareg swift-mode magit find-file-in-repository ess ensime apples-mode)))
+   '(lsp-sourcekit lsp-mode solarized-theme js2-refactor js2-mode flycheck tuareg swift-mode magit find-file-in-repository ess ensime apples-mode))
  '(safe-local-variable-values
-   (quote
-    ((eval add-hook
-	   (quote prog-mode-hook)
-	   (lambda nil
-	     (whitespace-mode 1))
-	   (not :APPEND)
-	   :BUFFER-LOCAL)
+   '((eval add-hook 'prog-mode-hook
+           (lambda nil
+             (whitespace-mode 1))
+           (not :APPEND)
+           :BUFFER-LOCAL)
      (tab-always-indent . t)
      (swift-basic-offset . 2)
      (whitespace-style face lines indentation:space)
      (swift-syntax-check-fn . swift-project-swift-syntax-check)
      (swift-find-executable-fn . swift-project-executable-find)
      (eval let*
-	   ((x
-	     (dir-locals-find-file default-directory))
-	    (this-directory
-	     (if
-		 (listp x)
-		 (car x)
-	       (file-name-directory x))))
-	   (unless
-	       (or
-		(featurep
-		 (quote swift-project-settings))
-		(and
-		 (fboundp
-		  (quote tramp-tramp-file-p))
-		 (tramp-tramp-file-p this-directory)))
-	     (add-to-list
-	      (quote load-path)
-	      (concat this-directory "utils")
-	      :append)
-	     (let
-		 ((swift-project-directory this-directory))
-	       (require
-		(quote swift-project-settings))))
-	   (set
-	    (make-local-variable
-	     (quote swift-project-directory))
-	    this-directory)))))
+           ((x
+             (dir-locals-find-file default-directory))
+            (this-directory
+             (if
+                 (listp x)
+                 (car x)
+               (file-name-directory x))))
+           (unless
+               (or
+                (featurep 'swift-project-settings)
+                (and
+                 (fboundp 'tramp-tramp-file-p)
+                 (tramp-tramp-file-p this-directory)))
+             (add-to-list 'load-path
+                          (concat this-directory "utils")
+                          :append)
+             (let
+                 ((swift-project-directory this-directory))
+               (require 'swift-project-settings)))
+           (set
+            (make-local-variable 'swift-project-directory)
+            this-directory))))
  '(scroll-bar-mode nil)
  '(show-trailing-whitespace t)
  '(tool-bar-mode nil))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -107,8 +107,16 @@
 
 (load "/Users/nealsid/src/github/ejj/ejj.el")
 
-(eval-after-load 'lsp-mode
-  (progn
-    (require 'lsp-sourcekit)
-    (setq lsp-sourcekit-executable
-          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp")))
+(load-theme 'deeper-blue)
+(add-to-list 'initial-frame-alist '(font . "-*-Consolas-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1"))
+
+(shell (generate-new-buffer "shell"))
+(shell (generate-new-buffer "build"))
+
+(global-set-key (kbd "M-<f10>") (lambda ()
+                                  (interactive)
+                                  (switch-to-buffer "shell")))
+
+(global-set-key (kbd "M-S-<f10>") (lambda ()
+                                    (interactive)
+                                    (switch-to-buffer "build")))
