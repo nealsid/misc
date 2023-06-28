@@ -51,12 +51,11 @@
  '(indent-tabs-mode nil)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(ggtags wanderlust dtrace-script-mode cmake-font-lock realgud-lldb slime dash lsp-sourcekit lsp-mode solarized-theme js2-refactor js2-mode flycheck tuareg swift-mo de magit find-file-in-repository ess ensime apples-mode))
+   '(elisp-autofmt ggtags wanderlust dtrace-script-mode cmake-font-lock realgud-lldb slime dash lsp-sourcekit lsp-mode solarized-theme js2-refactor js2-mode flycheck tuareg swift-mo de magit find-file-in-repository ess ensime apples-mode))
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(simpleproj-minor-mode-hook nil)
- '(tool-bar-mode nil)
-)
+ '(tool-bar-mode nil))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -73,6 +72,7 @@
 
 (global-set-key (kbd "C-c e") 'find-dot-emacs)
 
+(column-number-mode)
 
 (load-theme 'deeper-blue)
 (add-to-list 'initial-frame-alist '(font . "-*-Consolas-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1"))
@@ -109,7 +109,9 @@
                                                     "Easy to misread; consider moving the element to the next line")
                                              prepend))))))
 
-(keymap-set dired-mode-map (kbd "E")
-            (lambda ()
-              (interactive)
-              (mapcar 'load-file (dired-get-marked-files))))
+(add-hook 'dired-mode-hook
+          (lambda ()
+            (keymap-set dired-mode-map (kbd "E")
+                        (lambda ()
+                          (interactive)
+                          (mapcar 'load-file (dired-get-marked-files))))))
