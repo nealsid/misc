@@ -119,16 +119,13 @@
 (defun nsd-dired-load-marked-files ()
   (interactive)
   (let ((files-loaded
-         (cl-loop for x in (dired-get-marked-files)
+         (cl-loop for file-to-load in (dired-get-marked-files)
            for file-loaded = nil
-           do (condition-case x
-                  (progn
-                    (load-file x)
-                    (setq file-loaded t))
-                (error x
-                       (message "Error: %s %s" (car x) (cdr x))
-                       (setq file-loaded nil)))
-           when file-loaded collect x)))
+           do (condition-case load-error
+                  (setq file-loaded (load-file file-to-load))
+                (error load-error
+                       (message "Error: %s %s" (car load-error) (cdr load-error))))
+           when file-loaded collect file-to-load)))
     (mapc (lambda (file-without-error)
             (dired-goto-file file-without-error)
             (dired-unmark 1))
