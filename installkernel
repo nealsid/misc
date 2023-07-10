@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# Meant to be run by "make install" in the Linux kernel source tree
+#
+
+sudo make modules_install -j `nproc`
+sudo cp arch/x86/boot/bzImage /$4/vmlinuz-$1
+sudo mkinitcpio -g /$4/initramfs-$1.img -k $1
+
+# For some reason, sed keeps adding a blank line at the beginning of
+# the file, so I'm grossly using tail to filter that out instead of
+# learning more sed (which is also why I am not using the -i flag to
+# sed)
+sudo cp /boot/EFI/refind/refind.conf /boot/EFI/refind/refind.confbak
+sudo sh -c "sed -E '/./{H;$!d} ; x ; s/menuentry ArchLinuxTesting \{/menuentry ArchLinuxTesting \{/ ; T ; s/loader [^ \n]+/loader vmlinuz-'$1'/ ; s/initrd [^ \n]+/initrd initramfs-'$1'.img/' /boot/EFI/refind/refind.conf | tail +2 > /boot/EFI/refind/refind-edited.conf"
+sudo mv /boot/EFI/refind/refind-edited.conf /boot/EFI/refind/refind.conf
