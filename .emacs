@@ -75,11 +75,11 @@
  '(line-spacing 0.4)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(paredit color-theme-modern dirtree elisp-autofmt ggtags wanderlust
-             dtrace-script-mode cmake-font-lock realgud-lldb slime
-             dash lsp-sourcekit lsp-mode solarized-theme js2-refactor
-             js2-mode flycheck tuareg swift-mo de magit
-             find-file-in-repository ess ensime apples-mode))
+   '(helm paredit color-theme-modern dirtree elisp-autofmt ggtags
+          wanderlust dtrace-script-mode cmake-font-lock realgud-lldb
+          slime dash lsp-sourcekit lsp-mode solarized-theme
+          js2-refactor js2-mode flycheck tuareg swift-mo de magit
+          find-file-in-repository ess ensime apples-mode))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 101)
  '(send-mail-function 'smtpmail-send-it)
@@ -167,7 +167,8 @@
 (add-hook 'prog-mode-hook (lambda ()
                             (display-line-numbers-mode)
                             (hl-line-mode)
-                            (setq hl-line-range-function 'nsd-hi-line-range-function)))
+                            (setq hl-line-range-function 'nsd-hl-line-range-function)
+                            (global-set-key (kbd "s-\\") 'nsd-obarray-based-completion-helm)))
 
 (add-hook 'which-function-mode-hook (lambda ()
                                       (set-face-foreground 'which-func "White")))
@@ -189,7 +190,7 @@
 (set-face-foreground 'mode-line-buffer-id "White")
 (set-face-foreground 'mode-line-active "White")
 (set-face-background 'mode-line-active "MediumBlue")
-(set-face-foreground line-number "gray30")
+(set-face-foreground 'line-number "gray30")
 
 (defvar nsd-window-parameters
   '(window-parameters . ((no-other-window . t)
@@ -202,6 +203,8 @@
  display-buffer-alist
  `(((major-mode . dired-mode)
     display-buffer-in-side-window (side . right) (slot . -1)
+    ,nsd-window-parameters)
+   ("\\*Helm\\*" display-buffer-in-side-window (side . right) (slot . -1) (preserve-size . (nil . t))
     ,nsd-window-parameters)
    ("\\*\\(?:help\\|grep\\|Completions\\)\\*"
     display-buffer-in-side-window
@@ -243,3 +246,30 @@
 (global-set-key (kbd "C-s-b") (lambda () (interactive) (mywm-toggle-side-window 'bottom)))
 (global-set-key (kbd "C-s-l") (lambda () (interactive) (mywm-toggle-side-window 'left)))
 (global-set-key (kbd "C-s-t") (lambda () (interactive) (mywm-toggle-side-window 'top)))
+
+(setq nsd--obarray-entries-as-strings (list))
+
+(defun nsd--update-obarray-string-list ()
+  (setq nsd--obarray-entries-as-strings (list))
+  (mapatoms (lambda (atom)
+              (push (format "%s" atom) nsd--obarray-entries-as-strings))))
+
+(nsd--update-obarray-string-list)
+
+(defun nsd-obarray-based-completion ()
+  (interactive)
+  (let ((read-result
+         (ido-completing-read "symbol> " nsd--obarray-entries-as-strings nil nil (thing-at-point 'symbol)))
+        (current-symbol-bounds (bounds-of-thing-at-point 'symbol)))
+    (delete-region (car current-symbol-bounds) (cdr current-symbol-bounds))
+    (insert read-result)))
+
+(defun nsd-obarray-based-completion-helm ()
+  (interactive)
+  (let ((read-result
+         (helm :sources `(,(helm-build-sync-source "obarray" :candidates nsd--obarray-entries-as-strings))
+               :input (thing-at-point 'symbol)
+               :prompt "symbol> "))
+        (current-symbol-bounds (bounds-of-thing-at-point 'symbol)))
+    (delete-region (car current-symbol-bounds) (cdr current-symbol-bounds))
+    (insert read-result)))
