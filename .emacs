@@ -225,6 +225,16 @@
       (cond ((eq beg end-pos) nil)
             (t (cons beg end-pos))))))
 
+(defun nsd-all-windows-with-parameter (parameter &optional value frame any minibuf)
+  (let ((matching-windows (list))
+        (window-walking-function (lambda (one-window)
+                                   (let ((window-parameter-value (window-parameter one-window parameter)))
+	                             (when (and window-parameter-value
+		                                (or (not value) (equal value window-parameter-value)))
+                                       (push one-window matching-windows))))))
+    (walk-window-tree window-walking-function frame nil)
+    matching-windows))
+
 (defvar mywm-side-window-last-shown-buffer
   '((top . nil)
    (right . nil)
@@ -232,20 +242,24 @@
    (left . nil))
   "Alist of side window locations to last buffer shown")
 
-(defun mywm-toggle-side-window (side-window-location)
-  (let ((window--sides-inhibit-check t)
-        (side-window (window-with-parameter 'window-side side-window-location)))
-    (if side-window
+(defun mywm-toggle-windows-at-side (side-window-location)
+  (let* ((window--sides-inhibit-check t)
+         (side-windows (nsd-all-windows-with-parameter 'window-side side-window-location))
+         (side-window-buffers (mapcar (lambda (side-window)
+                                        (window-buffer side-window))
+                                      side-windows)))
+
+    (if side-windows
         (progn
           (setf (alist-get side-window-location mywm-side-window-last-shown-buffer)
-                (window-buffer side-window))
-          (delete-window side-window))
-      (display-buffer (alist-get side-window-location mywm-side-window-last-shown-buffer)))))
+                side-window-buffers)
+          (mapc 'delete-window side-windows))
+      (mapc 'display-buffer (alist-get side-window-location mywm-side-window-last-shown-buffer)))))
 
-(global-set-key (kbd "C-s-r") (lambda () (interactive) (mywm-toggle-side-window 'right)))
-(global-set-key (kbd "C-s-b") (lambda () (interactive) (mywm-toggle-side-window 'bottom)))
-(global-set-key (kbd "C-s-l") (lambda () (interactive) (mywm-toggle-side-window 'left)))
-(global-set-key (kbd "C-s-t") (lambda () (interactive) (mywm-toggle-side-window 'top)))
+(global-set-key (kbd "C-s-r") (lambda () (interactive) (mywm-toggle-windows-at-side 'right)))
+(global-set-key (kbd "C-s-b") (lambda () (interactive) (mywm-toggle-windows-at-side 'bottom)))
+(global-set-key (kbd "C-s-l") (lambda () (interactive) (mywm-toggle-windows-at-side 'left)))
+(global-set-key (kbd "C-s-t") (lambda () (interactive) (mywm-toggle-windows-at-side 'top)))
 
 (setq nsd--obarray-entries-as-strings (list))
 
