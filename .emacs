@@ -232,7 +232,7 @@
 	                             (when (and window-parameter-value
 		                                (or (not value) (equal value window-parameter-value)))
                                        (push one-window matching-windows))))))
-    (walk-window-tree window-walking-function frame nil)
+    (walk-window-tree window-walking-function frame any minibuf)
     matching-windows))
 
 (defvar mywm-side-window-last-shown-buffer
