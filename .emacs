@@ -70,6 +70,7 @@
      "ff8be9ed2696bf7bc999423d909a603cb23a9525bb43135c0d256b0b9377c958"
      default))
  '(display-buffer-reuse-frames t)
+ '(find-file-visit-truename t)
  '(global-auto-revert-mode t)
  '(indent-tabs-mode nil)
  '(line-spacing 0.4)
@@ -85,11 +86,12 @@
  '(send-mail-function 'smtpmail-send-it)
  '(show-paren-mode t)
  '(simpleproj-minor-mode-hook nil)
+ '(smtpmail-servers-requiring-authorization "smtp.gmail.com")
  '(smtpmail-smtp-server "smtp.gmail.com")
  '(smtpmail-smtp-service 465)
  '(smtpmail-stream-type 'ssl)
- '(smtpmail-servers-requiring-authorization "smtp.gmail.com")
  '(tool-bar-mode nil)
+ '(vc-follow-symlinks nil)
  '(warning-suppress-types '((comp))))
 
 (custom-set-faces
@@ -265,6 +267,16 @@
 (defvar side-window-cycle-percentages '(.1 .25 .5)
   "List of percentages of frame size to cycle through when resizing side windows.")
 
+(defalias 'local 'let*)
+
+(defun animated-window-resize (window delta &optional horizontal ignore pixelwise)
+  "Resizes a window using window-resize, but does it in a line by line fashion for a sliding effect in the UI."
+  (local ((step (/ delta (abs delta)))
+          (resize-and-redisplay-fn (lambda (n)
+                                     (window-resize window step horizontal ignore pixelwise)
+                                     (redisplay))))
+    (mapc resize-and-redisplay-fn (number-sequence step delta step))))
+
 (defun cycle-side-window-sizes (side-window-location)
   "Change size (width or height, depending on the location) of side
 windows in a manner which cycles through preset sizes (see
@@ -287,7 +299,7 @@ windows in a manner which cycles through preset sizes (see
        (window-resize-args (list window-to-resize
                                  (- next-size window-size)
                                  horizontal)))
-    (apply 'window-resize window-resize-args)))
+    (apply 'animated-window-resize window-resize-args)))
 
 (setq nsd--obarray-entries-as-strings (list))
 
