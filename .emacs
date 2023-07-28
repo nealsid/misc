@@ -183,7 +183,7 @@
   (split-window-horizontally)
   (switch-to-buffer-other-window (current-buffer)))
 
-(set-face-foreground 'font-lock-function-name-face "BlueViolet")
+(set-face-foreground 'font-lock-function-name-face "DeepSkyBlue1")
 (set-face-foreground 'font-lock-doc-face "cornsilk1")
 (set-face-foreground 'font-lock-keyword-face "DodgerBlue1")
 (set-face-foreground 'font-lock-string-face "DimGray")
@@ -260,6 +260,34 @@
 (global-set-key (kbd "C-s-b") (lambda () (interactive) (mywm-toggle-windows-at-side 'bottom)))
 (global-set-key (kbd "C-s-l") (lambda () (interactive) (mywm-toggle-windows-at-side 'left)))
 (global-set-key (kbd "C-s-t") (lambda () (interactive) (mywm-toggle-windows-at-side 'top)))
+(global-set-key (kbd "C-s-f") (lambda () (interactive) (describe-function (function-called-at-point))))
+
+(defvar side-window-cycle-percentages '(.1 .25 .5)
+  "List of percentages of frame size to cycle through when resizing side windows.")
+
+(defun cycle-side-window-sizes (side-window-location)
+  "Change size (width or height, depending on the location) of side
+windows in a manner which cycles through preset sizes (see
+`side-window-cycle-percentages')"
+  (let* ((window-to-resize (window-with-parameter 'window-side side-window-location))
+               (horizontal (cond ((member side-window-location '(left right))
+                                  t)
+                                 (nil)))
+                 (max-size (cond (horizontal (frame-width))
+                                 ((frame-height))))
+         (window-size-list (mapcar (lambda (x)
+                                     (truncate (* x max-size)))
+                                   side-window-cycle-percentages))
+           (window-size-fn (cond (horizontal 'window-width)
+                                 ('window-height)))
+              (window-size (funcall window-size-fn window-to-resize))
+                (next-size (or (cl-find-if (lambda (x) (< window-size x))
+                                           window-size-list)
+                               (car window-size-list)))
+       (window-resize-args (list window-to-resize
+                                 (- next-size window-size)
+                                 horizontal)))
+    (apply 'window-resize window-resize-args)))
 
 (setq nsd--obarray-entries-as-strings (list))
 
@@ -287,3 +315,6 @@
         (current-symbol-bounds (bounds-of-thing-at-point 'symbol)))
     (delete-region (car current-symbol-bounds) (cdr current-symbol-bounds))
     (insert read-result)))
+
+(setq helm-display-function 'helm-display-buffer-in-own-frame
+      helm-use-undecorated-frame-option t)
