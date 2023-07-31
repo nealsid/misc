@@ -76,11 +76,13 @@
  '(line-spacing 0.4)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(helm paredit color-theme-modern dirtree elisp-autofmt ggtags
-          wanderlust dtrace-script-mode cmake-font-lock realgud-lldb
-          slime dash lsp-sourcekit lsp-mode solarized-theme
-          js2-refactor js2-mode flycheck tuareg swift-mo de magit
-          find-file-in-repository ess ensime apples-mode))
+   '(rainbow-delimiters helm paredit color-theme-modern dirtree
+                        elisp-autofmt ggtags wanderlust
+                        dtrace-script-mode cmake-font-lock
+                        realgud-lldb slime dash lsp-sourcekit lsp-mode
+                        solarized-theme js2-refactor js2-mode flycheck
+                        tuareg swift-mo de magit
+                        find-file-in-repository ess ensime apples-mode))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 101)
  '(send-mail-function 'smtpmail-send-it)
@@ -199,16 +201,16 @@
                          (no-delete-other-windows . t))))
 
 (setq fit-window-to-buffer-horizontally t)
-(setq window-resize-pixelwise t)
+(setq window-resize-pixelwise nil)
 
 (setq
  display-buffer-alist
  `(((major-mode . dired-mode)
     display-buffer-in-side-window (side . right) (slot . -1)
     ,nsd-window-parameters)
-   ("\\*Helm\\*" display-buffer-in-side-window (side . right) (slot . -1) (preserve-size . (nil . t))
+   ("\\*\\(?:[Hh]el[mp]\\|info\\)\\*" display-buffer-in-side-window (side . right) (window-width . fit-window-to-buffer)
     ,nsd-window-parameters)
-   ("\\*\\(?:help\\|grep\\|Completions\\)\\*"
+   ("\\*\\(?:\\|grep\\|Completions\\)\\*"
     display-buffer-in-side-window
     (side . bottom) (slot . -1) (preserve-size . (nil . t))
     ,nsd-window-parameters)
