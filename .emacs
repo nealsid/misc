@@ -23,15 +23,8 @@
 (global-set-key (kbd "M-+") 'text-scale-increase)
 (global-set-key (kbd "M-_") 'text-scale-decrease)
 
-(setq exec-path (append exec-path (list "/Users/nealsid/bin" )))
+(push "/Users/nealsid/bin" exec-path)
 
-(c-set-offset 'innamespace 0)
-(defconst my-cc-style
-  '("cc-mode"
-    (c-offsets-alist . ((innamespace . [0])))))
-(c-add-style "my-cc-mode" my-cc-style)
-
-(setq display-buffer-reuse-frames t)
 (windmove-default-keybindings)
 
 (require 'cc-mode)
@@ -76,13 +69,12 @@
  '(line-spacing 0.4)
  '(menu-bar-mode nil)
  '(package-selected-packages
-   '(rainbow-delimiters helm paredit color-theme-modern dirtree
-                        elisp-autofmt ggtags wanderlust
-                        dtrace-script-mode cmake-font-lock
-                        realgud-lldb slime dash lsp-sourcekit lsp-mode
-                        solarized-theme js2-refactor js2-mode flycheck
-                        tuareg swift-mo de magit
-                        find-file-in-repository ess ensime apples-mode))
+   '(simpleproj ## rainbow-delimiters helm paredit color-theme-modern
+                dirtree elisp-autofmt ggtags wanderlust
+                dtrace-script-mode cmake-font-lock realgud-lldb slime
+                dash lsp-sourcekit lsp-mode solarized-theme
+                js2-refactor js2-mode flycheck tuareg swift-mo de
+                magit find-file-in-repository ess ensime apples-mode))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 101)
  '(send-mail-function 'smtpmail-send-it)
@@ -95,13 +87,6 @@
  '(tool-bar-mode nil)
  '(vc-follow-symlinks nil)
  '(warning-suppress-types '((comp))))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
 (server-start)
 
@@ -206,9 +191,10 @@
 (setq
  display-buffer-alist
  `(((major-mode . dired-mode)
-    display-buffer-in-side-window (side . right) (slot . -1)
-    ,nsd-window-parameters)
-   ("\\*\\(?:[Hh]el[mp]\\|info\\)\\*" display-buffer-in-side-window (side . right) (window-width . fit-window-to-buffer)
+    display-buffer-in-side-window (side . right)
+    (window-width . fit-window-to-buffer) ,nsd-window-parameters)
+   ("\\*\\(?:[Hh]el[mp]\\|xref\\|info\\|ggtags-global\\)\\*" display-buffer-in-side-window
+    (side . right) (window-width . fit-window-to-buffer)
     ,nsd-window-parameters)
    ("\\*\\(?:\\|grep\\|Completions\\)\\*"
     display-buffer-in-side-window
@@ -220,14 +206,10 @@
 
 (defun nsd-hl-line-range-function ()
   (save-excursion
-    (let ((beg (progn
-                 (beginning-of-line)
-                 (point)))
-          (end-pos (progn
-                     (end-of-line)
-                     (point))))
-      (cond ((eq beg end-pos) nil)
-            (t (cons beg end-pos))))))
+    (let ((beg-pos (pos-bol))
+          (end-pos (pos-eol)))
+      (cond ((eq beg-pos end-pos) nil)
+            (t (cons beg-pos end-pos))))))
 
 (defun nsd-all-windows-with-parameter (parameter &optional value frame any minibuf)
   (let ((matching-windows (list))
@@ -332,3 +314,9 @@ windows in a manner which cycles through preset sizes (see
 
 (setq helm-display-function 'helm-display-buffer-in-own-frame
       helm-use-undecorated-frame-option t)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
