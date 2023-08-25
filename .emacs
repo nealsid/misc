@@ -175,7 +175,7 @@
 (set-face-foreground 'font-lock-function-name-face "DeepSkyBlue1")
 (set-face-foreground 'font-lock-doc-face "cornsilk1")
 (set-face-foreground 'font-lock-keyword-face "DodgerBlue1")
-(set-face-foreground 'font-lock-string-face "DimGray")
+(set-face-foreground 'font-lock-string-face "LightSlateBlue")
 (set-face-foreground 'mode-line-buffer-id "White")
 (set-face-foreground 'mode-line-active "White")
 (set-face-background 'mode-line-active "MediumBlue")
@@ -190,10 +190,7 @@
 
 (setq
  display-buffer-alist
- `(((major-mode . dired-mode)
-    display-buffer-in-side-window (side . right)
-    (window-width . fit-window-to-buffer) ,nsd-window-parameters)
-   ("\\*\\(?:[Hh]el[mp]\\|xref\\|info\\|ggtags-global\\)\\*" display-buffer-in-side-window
+ `(("\\*\\(?:[Hh]el[mp]\\|xref\\|info\\|ggtags-global\\)\\*" display-buffer-in-side-window
     (side . right) (window-width . fit-window-to-buffer)
     ,nsd-window-parameters)
    ("\\*\\(?:\\|grep\\|Completions\\)\\*"
@@ -306,7 +303,7 @@ windows in a manner which cycles through preset sizes (see
   (interactive)
   (let ((read-result
          (helm :sources `(,(helm-build-sync-source "obarray" :candidates nsd--obarray-entries-as-strings))
-               :input (thing-at-point 'symbol)
+               :input (concat "^" (thing-at-point 'symbol))
                :prompt "symbol> "))
         (current-symbol-bounds (bounds-of-thing-at-point 'symbol)))
     (delete-region (car current-symbol-bounds) (cdr current-symbol-bounds))
@@ -320,3 +317,14 @@ windows in a manner which cycles through preset sizes (see
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(define-skeleton elisp-locals-skeleton
+  "Inserts a locals (i.e. let) skeleton at point"
+  nil
+  "(locals ((" _ "))\n"
+  "  ()")
+
+(define-skeleton elisp-cond-skeleton
+  "Inserts a cond skeleton at point"
+  nil
+  "(cond (" _ " ()))\n")
