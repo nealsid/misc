@@ -16,7 +16,8 @@
 (package-refresh-contents t)
 (unless (package-installed-p 'magit)
   (package-install 'magit))
-
+(unless (package-installed-p 'org-bullets)
+  (package-install 'org-bullets))
 (setq grep-command "grep -ri -nH -e ")
 
 (global-set-key (kbd "M-F") 'ffap)
@@ -32,6 +33,7 @@
 (add-hook 'prog-mode-hook (lambda ()
                             (setq show-trailing-whitespace t)))
 (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+(add-hook 'lisp-mode 'paredit-mode)
 (add-to-list 'auto-mode-alist '("\\.tcc\\'" . c++-mode))
 
 (custom-set-variables
@@ -68,13 +70,15 @@
  '(indent-tabs-mode nil)
  '(line-spacing 0.4)
  '(menu-bar-mode nil)
+ '(org-agenda-files '("~/git/relfiles/relfiles.org"))
  '(package-selected-packages
-   '(simpleproj ## rainbow-delimiters helm paredit color-theme-modern
-                dirtree elisp-autofmt ggtags wanderlust
-                dtrace-script-mode cmake-font-lock realgud-lldb slime
-                dash lsp-sourcekit lsp-mode solarized-theme
-                js2-refactor js2-mode flycheck tuareg swift-mo de
-                magit find-file-in-repository ess ensime apples-mode))
+   '(org-bullets simpleproj ## rainbow-delimiters helm paredit
+                 color-theme-modern dirtree elisp-autofmt ggtags
+                 wanderlust dtrace-script-mode cmake-font-lock
+                 realgud-lldb slime dash lsp-sourcekit lsp-mode
+                 solarized-theme js2-refactor js2-mode flycheck tuareg
+                 swift-mo de magit find-file-in-repository ess ensime
+                 apples-mode))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 101)
  '(send-mail-function 'smtpmail-send-it)
@@ -316,7 +320,32 @@ windows in a manner which cycles through preset sizes (see
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(fixed-pitch ((t (:family "Consolas" :height 80))))
+ '(org-block ((t (:inherit fixed-pitch))))
+ '(org-code ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-info ((t (:foreground "dark orange"))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-title ((t (:inherit default :weight bold :foreground "gray80" :font "Verdana" :height 2.0 :underline nil))))
+ '(org-done ((t (:foreground "gray30" :weight bold))))
+ '(org-headline-done ((t (:foreground "gray30"))))
+ '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+ '(org-level-1 ((t (:inherit default :foreground "MediumAquamarine" :font "Verdana" :height 1.0))))
+ '(org-level-2 ((t (:inherit default :foreground "gray80" :font "Verdana" :height 1.0))))
+ '(org-level-3 ((t (:inherit default :foreground "gray80" :font "Verdana" :height 1.0))))
+ '(org-level-4 ((t (:inherit default :foreground "gray80" :font "Verdana" :height 1.0))))
+ '(org-level-5 ((t (:inherit default :foreground "gray80" :font "Verdana"))))
+ '(org-level-6 ((t (:inherit default :foreground "gray80" :font "Verdana"))))
+ '(org-level-7 ((t (:inherit default :foreground "gray80" :font "Verdana"))))
+ '(org-level-8 ((t (:inherit default :foreground "gray80" :font "Verdana"))))
+ '(org-link ((t (:foreground "royal blue" :underline t))))
+ '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-property-value ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
+ '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+ '(org-todo ((t (:foreground "steelblue4" :weight bold))))
+ '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
+ '(variable-pitch ((t (:family "Sans Serif" :height 180 :weight thin)))))
 
 (define-skeleton elisp-locals-skeleton
   "Inserts a locals (i.e. let) skeleton at point"
@@ -327,4 +356,66 @@ windows in a manner which cycles through preset sizes (see
 (define-skeleton elisp-cond-skeleton
   "Inserts a cond skeleton at point"
   nil
-  "(cond (" _ " ()))\n")
+  "(cond (" @ - ") ())\n" > "\n")
+
+(setq org-hide-emphasis-markers 1)
+
+ (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(use-package org-bullets
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(let* ((variable-tuple
+          (cond ((x-list-fonts "ETBembo")         '(:font "ETBembo"))
+                ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+                ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+                ((x-list-fonts "Verdana")         '(:font "Verdana"))
+                ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+                (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+         (base-font-color     (face-foreground 'default nil 'default))
+         (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+
+    (custom-theme-set-faces
+     'user
+     `(org-level-8 ((t (,@headline ,@variable-tuple))))
+     `(org-level-7 ((t (,@headline ,@variable-tuple))))
+     `(org-level-6 ((t (,@headline ,@variable-tuple))))
+     `(org-level-5 ((t (,@headline ,@variable-tuple))))
+     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
+     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
+     `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
+     `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
+
+  (custom-theme-set-faces
+   'user
+   '(variable-pitch ((t (:family "Sans Serif" :height 180 :weight thin))))
+   '(fixed-pitch ((t ( :family "Consolas" :height 160)))))
+
+(add-hook 'org-mode-hook 'variable-pitch-mode)
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+(custom-theme-set-faces
+ 'user
+ '(org-block ((t (:inherit fixed-pitch))))
+ '(org-code ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-info ((t (:foreground "dark orange"))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+ '(org-done ((t (:foreground "gray30" :weight bold))))
+ '(org-headline-done ((t (:foreground "gray30"))))
+ '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+ '(org-level-2 ((t (:inherit (org-level-1 variable-pitch)))))
+ '(org-link ((t (:foreground "royal blue" :underline t))))
+ '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-property-value ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
+ '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+ '(org-todo ((t (:foreground "steelblue4" :weight bold))))
+ '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+
+(add-to-list 'slime-contribs 'slime-repl)
+(setq inferior-lisp-program "sbcl")
